@@ -1,0 +1,35 @@
+import telebot
+import random
+import os
+from father import TG_TOKEN
+
+bot = telebot.TeleBot(TG_TOKEN)
+
+# Проверим, какие картинки в папке
+print(os.listdir('images'))
+
+@bot.message_handler(commands=['start'])
+def start(message):
+    bot.send_message(message.chat.id,
+        "Привет! Какой мем ты хочешь?\n"
+        "/mem — обычные мемы\n"
+        "/cat_mem — мемы с котами"
+    )
+
+@bot.message_handler(commands=['mem'])
+def send_mem(message):
+    images = ['images/mem1.jpg', 'images/mem2.jpg', 'images/mem3.jpg']
+    weights = [0.6, 0.3, 0.1] # чем выше вес, тем чаще выпадает
+    selected_image = random.choices(images, weights=weights, k=1)[0]
+    with open(selected_image, 'rb') as f:
+        bot.send_photo(message.chat.id, f)
+
+@bot.message_handler(commands=['cat_mem'])
+def send_cat_mem(message):
+    images = ['images/mem4.jpg', 'images/mem5.jpg', 'images/mem6.jpg']
+    weights = [0.5, 0.4, 0.1] # тоже распределение редкости
+    selected_image = random.choices(images, weights=weights, k=1)[0]
+    with open(selected_image, 'rb') as f:
+        bot.send_photo(message.chat.id, f)
+
+bot.infinity_polling()
